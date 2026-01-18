@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-card">
+        <h1>🔌 Backend Connection Test</h1>
+        <p>Test your connection to the CollabSphere backend server.</p>
+        
+        <div>
+            <button onclick="testConnection()">Test Basic Connection</button>
+            <button onclick="testActuator()">Test Health Endpoint</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        const resultsDiv = document.getElementById('results');
+
+        async function testConnection() {
+            showLoading('Testing connection to backend...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showSuccess('Backend is running!', data);
+                } else {
+                    showError(`Server responded with status: ${response.status}`);
+                }
+            } catch (error) {
+                if (error.message.includes('Failed to fetch')) {
+                    showError('Cannot connect to backend!<br>Make sure:<br>1. Backend is running on port 8080<br>2. No CORS issues<br>3. Firewall is not blocking', error);
+                } else {
+                    showError('Connection error', error);
+                }
+            }
+        }
+
+        async function testActuator() {
+            showLoading('Testing health actuator endpoint...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/actuator/health`, {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showSuccess('Health endpoint is accessible!', data);
+                } else if (response.status === 403) {
+                    showSuccess('Backend is running! (403 Forbidden is expected for protected endpoints)', {
+                        status: response.status,
+                        message: 'The endpoint is protected by Spring Security'
+                    });
+                } else {
+                    showError(`Server responded with status: ${response.status}`);
+                }
+            } catch (error) {
+                showError('Connection failed', error);
+            }
+        }
+
+        function showLoading(message) {
+            resultsDiv.innerHTML = `
+                <div class="result">
+                    <p>⏳ ${message}</p>
+                </div>
+            `;
+        }
+
+        function showSuccess(message, data) {
+            resultsDiv.innerHTML = `
+                <div class="result">
+                    <p class="success">✅ ${message}</p>
+                    ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ''}
+                </div>
+            `;
+        }
+
+        function showError(message, error) {
+            resultsDiv.innerHTML = `
+                <div class="result">
+                    <p class="error">❌ ${message}</p>
+                    ${error ? `<pre>${error.message || error}</pre>` : ''}
+                </div>
+            `;
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testActuator, 500);
+        });
+    </script>
+</body>
+</html>

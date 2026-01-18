@@ -1,0 +1,134 @@
+/**
+ * CSS Custom Properties (Variables)
+ * CollabSphere Design System
+ */
+
+:root {
+  /* Primary Colors */
+  --cs-primary: #4f46e5;
+  --cs-primary-hover: #4338ca;
+  --cs-primary-light: #eef2ff;
+  --cs-primary-rgb: 79, 70, 229;
+
+  /* Secondary Colors */
+  --cs-secondary: #7c3aed;
+  --cs-secondary-hover: #6d28d9;
+  --cs-secondary-light: #f5f3ff;
+
+  /* Accent Colors */
+  --cs-accent: #06b6d4;
+  --cs-accent-hover: #0891b2;
+
+  /* Success, Warning, Error */
+  --cs-success: #10b981;
+  --cs-success-light: #d1fae5;
+  --cs-warning: #f59e0b;
+  --cs-warning-light: #fef3c7;
+  --cs-error: #ef4444;
+  --cs-error-light: #fee2e2;
+
+  /* Neutral Colors */
+  --cs-gray-50: #f9fafb;
+  --cs-gray-100: #f3f4f6;
+  --cs-gray-200: #e5e7eb;
+  --cs-gray-300: #d1d5db;
+  --cs-gray-400: #9ca3af;
+  --cs-gray-500: #6b7280;
+  --cs-gray-600: #4b5563;
+  --cs-gray-700: #374151;
+  --cs-gray-800: #1f2937;
+  --cs-gray-900: #111827;
+
+  /* Background Colors */
+  --cs-bg-primary: #ffffff;
+  --cs-bg-secondary: #f9fafb;
+  --cs-bg-tertiary: #f3f4f6;
+
+  /* Text Colors */
+  --cs-text-primary: #111827;
+  --cs-text-secondary: #4b5563;
+  --cs-text-muted: #6b7280;
+  --cs-text-light: #9ca3af;
+
+  /* Border Colors */
+  --cs-border: #e5e7eb;
+  --cs-border-light: #f3f4f6;
+
+  /* Shadows */
+  --cs-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --cs-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --cs-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --cs-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --cs-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Border Radius */
+  --cs-radius-sm: 0.25rem;
+  --cs-radius: 0.5rem;
+  --cs-radius-md: 0.75rem;
+  --cs-radius-lg: 1rem;
+  --cs-radius-xl: 1.5rem;
+  --cs-radius-full: 9999px;
+
+  /* Spacing */
+  --cs-spacing-xs: 0.25rem;
+  --cs-spacing-sm: 0.5rem;
+  --cs-spacing-md: 1rem;
+  --cs-spacing-lg: 1.5rem;
+  --cs-spacing-xl: 2rem;
+  --cs-spacing-2xl: 3rem;
+  --cs-spacing-3xl: 4rem;
+
+  /* Transitions */
+  --cs-transition-fast: 150ms ease;
+  --cs-transition: 200ms ease;
+  --cs-transition-slow: 300ms ease;
+
+  /* Font Sizes */
+  --cs-font-xs: 0.75rem;
+  --cs-font-sm: 0.875rem;
+  --cs-font-base: 1rem;
+  --cs-font-lg: 1.125rem;
+  --cs-font-xl: 1.25rem;
+  --cs-font-2xl: 1.5rem;
+  --cs-font-3xl: 1.875rem;
+  --cs-font-4xl: 2.25rem;
+  --cs-font-5xl: 3rem;
+
+  /* Line Heights */
+  --cs-leading-tight: 1.25;
+  --cs-leading-normal: 1.5;
+  --cs-leading-relaxed: 1.75;
+
+  /* Z-Index Scale */
+  --cs-z-dropdown: 1000;
+  --cs-z-sticky: 1020;
+  --cs-z-fixed: 1030;
+  --cs-z-modal-backdrop: 1040;
+  --cs-z-modal: 1050;
+  --cs-z-popover: 1060;
+  --cs-z-tooltip: 1070;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --cs-bg-primary: #111827;
+  --cs-bg-secondary: #1f2937;
+  --cs-bg-tertiary: #374151;
+
+  --cs-text-primary: #f9fafb;
+  --cs-text-secondary: #d1d5db;
+  --cs-text-muted: #9ca3af;
+  --cs-text-light: #6b7280;
+
+  --cs-border: #374151;
+  --cs-border-light: #4b5563;
+
+  --cs-primary-light: #312e81;
+  --cs-secondary-light: #4c1d95;
+
+  --cs-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --cs-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --cs-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --cs-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --cs-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}

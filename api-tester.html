@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Response Tester</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        .status.success { background: #10b981; color: white; }
+        .status.error { background: #ef4444; color: white; }
+        .status.warning { background: #f59e0b; color: white; }
+        .status.info { background: #3b82f6; color: white; }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover { background: #5568d3; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        
+        .test-result {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .test-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+        .endpoint {
+            font-family: monospace;
+            background: #e0e7ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #4338ca;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f4f6;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔍 CollabSphere API Response Tester</h1>
+            <p style="color: #6b7280; margin-bottom: 20px;">Test backend API endpoints and check responses</p>
+            
+            <div>
+                <button onclick="testAll()">🚀 Run All Tests</button>
+                <button onclick="testActuator()">❤️ Health Check</button>
+                <button onclick="testAuth()">🔐 Auth Endpoints</button>
+                <button onclick="testTeams()">👥 Teams API</button>
+                <button onclick="clearResults()">🗑️ Clear</button>
+            </div>
+
+            <div id="summary" style="margin-top: 20px;"></div>
+            <div id="results" class="test-result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        const resultsDiv = document.getElementById('results');
+        const summaryDiv = document.getElementById('summary');
+        let testResults = [];
+
+        async function testAll() {
+            clearResults();
+            showLoading();
+            testResults = [];
+            
+            await testActuator();
+            await testAuth();
+            await testTeams();
+            
+            showSummary();
+        }
+
+        async function testActuator() {
+            addTest('Health Endpoint', '/actuator/health', async () => {
+                const response = await fetch(`${API_BASE}/actuator/health`);
+                return { status: response.status, data: response.status === 200 ? await response.json() : 'Protected endpoint (expected)' };
+            });
+        }
+
+        async function testAuth() {
+            addTest('Login Endpoint (POST)', '/auth/login', async () => {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: 'test@example.com', password: 'test123' })
+                });
+                return { status: response.status, data: await response.json() };
+            });
+
+            addTest('Register Endpoint (POST)', '/auth/register', async () => {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        displayName: 'Test User',
+                        email: `test${Date.now()}@example.com`,
+                        password: 'Test@123',
+                        role: 'STUDENT'
+                    })
+                });
+                return { status: response.status, data: await response.json() };
+            });
+        }
+
+        async function testTeams() {
+            addTest('Teams Endpoint', '/teams/my-teams', async () => {
+                const response = await fetch(`${API_BASE}/teams/my-teams`);
+                return { status: response.status, data: response.status === 401 ? 'Requires authentication (expected)' : await response.json() };
+            });
+        }
+
+        async function addTest(name, endpoint, testFn) {
+            resultsDiv.style.display = 'block';
+            const testItem = document.createElement('div');
+            testItem.className = 'test-item';
+            testItem.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${name}</strong><br>
+                        <span class="endpoint">${endpoint}</span>
+                    </div>
+                    <div class="loading"></div>
+                </div>
+            `;
+            resultsDiv.appendChild(testItem);
+
+            try {
+                const result = await testFn();
+                const statusClass = result.status >= 200 && result.status < 300 ? 'success' : 
+                                  result.status === 401 || result.status === 403 ? 'warning' : 'error';
+                
+                testItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div>
+                            <strong>${name}</strong><br>
+                            <span class="endpoint">${endpoint}</span>
+                        </div>
+                        <span class="status ${statusClass}">HTTP ${result.status}</span>
+                    </div>
+                    <pre>${JSON.stringify(result.data, null, 2)}</pre>
+                `;
+                
+                testResults.push({ name, status: result.status, success: statusClass !== 'error' });
+            } catch (error) {
+                testItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div>
+                            <strong>${name}</strong><br>
+                            <span class="endpoint">${endpoint}</span>
+                        </div>
+                        <span class="status error">FAILED</span>
+                    </div>
+                    <pre style="background: #7f1d1d; color: #fecaca;">${error.message || error}</pre>
+                `;
+                
+                testResults.push({ name, status: 0, success: false, error: error.message });
+            }
+        }
+
+        function showLoading() {
+            summaryDiv.innerHTML = '<div class="loading"></div> Running tests...';
+            resultsDiv.innerHTML = '';
+            resultsDiv.style.display = 'block';
+        }
+
+        function showSummary() {
+            const total = testResults.length;
+            const passed = testResults.filter(t => t.success).length;
+            const failed = total - passed;
+            
+            summaryDiv.innerHTML = `
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span class="status info">Total: ${total}</span>
+                    <span class="status success">Passed: ${passed}</span>
+                    ${failed > 0 ? `<span class="status error">Failed: ${failed}</span>` : ''}
+                </div>
+            `;
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+            resultsDiv.style.display = 'none';
+            summaryDiv.innerHTML = '';
+            testResults = [];
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(testActuator, 500);
+        });
+    </script>
+</body>
+</html>

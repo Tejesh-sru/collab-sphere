@@ -36,7 +36,7 @@ public class Notification {
     private Type type;
 
     @Column(name = "is_read")
-    private Boolean isRead = false;
+    private Boolean read = false;
 
     @Column(name = "action_url")
     private String actionUrl;

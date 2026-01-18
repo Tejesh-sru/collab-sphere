@@ -28,7 +28,7 @@ public class NotificationService {
 
     public List<NotificationDTO> getUnreadNotifications() {
         User currentUser = userService.getCurrentUser();
-        return notificationRepository.findByUserAndIsReadFalseOrderByCreatedAtDesc(currentUser)
+        return notificationRepository.findByUserAndReadFalseOrderByCreatedAtDesc(currentUser)
                 .stream()
                 .map(this::mapToNotificationDTO)
                 .collect(Collectors.toList());
@@ -44,7 +44,7 @@ public class NotificationService {
             throw new RuntimeException("Unauthorized");
         }
 
-        notification.setIsRead(true);
+        notification.setRead(true);
         notificationRepository.save(notification);
     }
 
@@ -52,9 +52,9 @@ public class NotificationService {
     public void markAllAsRead() {
         User currentUser = userService.getCurrentUser();
         List<Notification> notifications = notificationRepository
-                .findByUserAndIsReadFalseOrderByCreatedAtDesc(currentUser);
+                .findByUserAndReadFalseOrderByCreatedAtDesc(currentUser);
         
-        notifications.forEach(n -> n.setIsRead(true));
+        notifications.forEach(n -> n.setRead(true));
         notificationRepository.saveAll(notifications);
     }
 
@@ -69,7 +69,7 @@ public class NotificationService {
                 .title(notification.getTitle())
                 .message(notification.getMessage())
                 .type(notification.getType().name())
-                .isRead(notification.getIsRead())
+                .isRead(notification.getRead())
                 .actionUrl(notification.getActionUrl())
                 .createdAt(notification.getCreatedAt())
                 .build();

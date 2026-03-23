@@ -5,7 +5,7 @@ import com.collabsphere.dto.ChangePasswordRequest;
 import com.collabsphere.dto.UpdateProfileRequest;
 import com.collabsphere.dto.UserDTO;
 import com.collabsphere.service.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor; 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
